@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import { useIndexStore } from "../stores/index";
 import axios from "axios";
 import * as apiUrl from "../constant/index";
@@ -52,15 +52,14 @@ router.beforeEach(async (to, from, next) => {
       hash:location.pathname,
     });
     const res:{error:number,data:any} = result.data;
-    console.log('我执行到这里了1',res)
     // "http://admin2.eryicaier.com/commonapi/wechatHandler/wechatOAuth?redirect_uri=http%3A%2F%2Flocalhost%3A1033%2F&scope=snsapi_userinfo&hash=%23%2F"
     if(res.error==0){
       console.log('我执行到这里了2',res.data.url)
-      if (res.data.code==302){
+      if (res.data.code == 302){
         console.log('我执行到这里了',res.data.url)
         location.href = res.data.url;
       }else{
-        userInfo=res.data.userInfo
+        userInfo = res.data.userInfo
         if (white_routes.indexOf(to.path) > -1) {
           return next();
         }
@@ -76,23 +75,33 @@ router.beforeEach(async (to, from, next) => {
       }
       next();
     }else{
-      var res:{error:number,data:any} = await axios.post(apiUrl.LOGIN_BY_CODE, {
+      var result:{data:any} = await axios.post(apiUrl.LOGIN_BY_CODE, {
         code: query.code
       });
+      const res = result.data;
+      console.log('res====>>>LOGIN_BY_CODE', res);
+      // return ;
       if (res.error==405){
-          setTimeout(()=>{
-            return location.href = location.pathname + location.hash
-          },1000)
-          return;
+        setTimeout(()=>{
+          return location.href = location.pathname + location.hash
+        },1000)
+        return;
       }
       if (res.error != 0) {
+        console.log('res====>>>res.error != 0');
         // Toast.fail(res.message);
         next({path:"/403"});
       }else{
+        console.log('res====>>>res.error === 0',res);
         if(res.data.token){
+          console.log('res====>>>res.error === token',Cookies);
+
           Cookies.set("usertoken", res.data.token);
         }
-        userInfo=res.data;
+        console.log('res====>>>res.error === 1');
+        
+        
+        indexStore.userInfo = res.data;
         if (white_routes.indexOf(to.path) > -1) {
           return next();
         }

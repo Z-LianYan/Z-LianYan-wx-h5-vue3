@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
 import { useCounterStore,useIndexStore } from "./stores/index";
 const counter = useCounterStore();
 const index = useIndexStore();
@@ -10,8 +10,9 @@ const index = useIndexStore();
 <template>
   {{index.count}}
   <div>{{counter.count}}</div>
-  <div @click="counter.increment">1234</div>
+  <div @click="counter.increment">{{index.userInfo && index.userInfo.nickname}}</div>
   <header>
+    
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
